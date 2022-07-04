@@ -3,6 +3,7 @@ const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const path = require('path');
 const fs = require('fs');
+const generatePPTX = require('./generator');
 const filePath = path.relative(__dirname, './test.docx');
 var options = {
     convertImage: mammoth.images.imgElement(function(image) {
@@ -39,9 +40,14 @@ mammoth.convertToHtml({
     // const selectionQuestions = [];
     selectionQuestion.nextSibling;
     classify(selectionQuestion.nextSibling);
-    //fs.writeFileSync('./output2.html', htmlString);
+    for(let key in questionPool){
+        const q = questionPool[key];
+        q['options'] = classifyOption(q['rawOptions']);
+    }
     //console.log(questionPool);
-    questionPool.values()
+    fs.writeFileSync('./questions.json',JSON.stringify(questionPool,null,2));
+
+    generatePPTX('./questions.json');
 }).done(); 
 
 function classify(element){
@@ -57,6 +63,7 @@ function classify(element){
             console.log(pureTitle);
             currentQuestionTitle = pureTitle;
             questionPool[currentQuestionTitle] = {
+                title: pureTitle,
                 no: getQuestionNumber(element.textContent),
                 rawOptions:[],
                 image: null
@@ -64,7 +71,7 @@ function classify(element){
         }
         else if(element.firstChild && element.firstChild.nodeName === 'IMG'){
             if(questionPool[currentQuestionTitle]){
-                questionPool[currentQuestionTitle]['image'] = element.firstChild.src;
+                questionPool[currentQuestionTitle]['image'] = element.firstChild.src;//.substring(0,20);
             }
         }
         else{
@@ -80,13 +87,15 @@ function classifyOption(rawOptions){
     const optionCount = rawOptions.length;
     if(optionCount === 1 && isAllOptionsInOneLine(rawOptions[0])){
         //split options
+        const arr = rawOptions[0].split(/\t/);
+        return arr.filter((result) => result !== '');
     }
-    if(optionCount === 4){
-        
+    if(optionCount > 1){
+        return JSON.parse(JSON.stringify(rawOptions));
     }
 }
 function isAllOptionsInOneLine(content){
-    const testReg = /[a|A][\w\W]*[b|B][\w\W]*[c|C][\w\W]*[d|D][\w\W]*/g;
+    const testReg = /[aA][\w\W]*[bB][\w\W]*[cC][\w\W]*[dD][\w\W]*/g;
     return content.search(testReg) !== -1 ? true : false;
 }
 
