@@ -42,7 +42,9 @@ mammoth.convertToHtml({
     classify(selectionQuestion.nextSibling);
     for(let key in questionPool){
         const q = questionPool[key];
-        q['options'] = classifyOption(q['rawOptions']);
+        let tmpOpt = classifyOption(q['rawOptions']);
+        tmpOpt = tmpOpt.map((item)=> item.trim());
+        q['options'] = tmpOpt;
     }
     //console.log(questionPool);
     fs.writeFileSync('./questions.json',JSON.stringify(questionPool,null,2));
@@ -52,7 +54,7 @@ mammoth.convertToHtml({
 
 function classify(element){
     const titleReg = /^\d+[\s\S]*/g;
-    if(!element.nextSibling || (element.nextSibling && element.nextSibling.textContent.search('part_two') !== -1)){
+    if(!element.nextSibling || (element && element.textContent.search('part_two') !== -1)){
         return;
     }else{
         //is question title
@@ -87,22 +89,53 @@ function classifyOption(rawOptions){
     const optionCount = rawOptions.length;
     if(optionCount === 1 && isAllOptionsInOneLine(rawOptions[0])){
         //split options
-        const arr = rawOptions[0].split(/\t/);
-        return arr.filter((result) => result !== '');
+        let arr = rawOptions[0].split(/\t/);
+        if(arr.length < 4){
+            arr = rawOptions[0].split(/\s/);
+        }
+        return  arr.filter((result) => result.trim() !== '');
     }
-    if(optionCount > 1){
+    if(optionCount === 2){
+        let tmp = []
+        if(isTwoOptionsInOneLine(rawOptions[0])){
+            let arr = rawOptions[0].split(/\t/);
+            if(arr.length < 2){
+                arr = rawOptions[0].split(/\s/);
+            }
+            tmp = tmp.concat(arr.filter((result) => result.trim() !== ''));
+        }
+        if(isTwoOptionsInOneLine(rawOptions[1])){
+            let arr = rawOptions[1].split(/\t/);
+            if(arr.length < 2){
+                arr = rawOptions[1].split(/\s/);
+            }
+            tmp = tmp.concat(arr.filter((result) => result.trim() !== ''));
+        }
+        return tmp;
+    }
+    if(optionCount === 4){
         return JSON.parse(JSON.stringify(rawOptions));
     }
+    return [];
 }
 function isAllOptionsInOneLine(content){
     const testReg = /[aA][\w\W]*[bB][\w\W]*[cC][\w\W]*[dD][\w\W]*/g;
     return content.search(testReg) !== -1 ? true : false;
 }
-
+function isTwoOptionsInOneLine(content){
+    const testReg = /[aA][\w\W]*[bB][\w\W]*/g;
+    const testReg2 = /[cC][\w\W]*[dD][\w\W]*/g;
+    const result =  content.search(testReg) !== -1 ? true : false;
+    const result2 =  content.search(testReg2) !== -1 ? true : false;
+    if(result || result2){
+        return true;
+    }
+    return false;
+}
 function leftTrimSpecialChar(word){
     const reg = /[\u4e00-\u9fa5A-Za-z]/;
     while(word.length > 0 && !reg.test(word.charAt(0))){
-        word = word.substring(1,word.length-1);
+        word = word.substring(1,word.length);
     }
     return word;
 }
