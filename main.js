@@ -14,11 +14,11 @@ var options = {
         });
     })
 };
-let questionPool = {};
+let questionPool;
 let currentQuestionTitle;
 
 module.exports = async function convertDocx2Pptx(filePath) {
-    
+    questionPool = {};
     const result = await mammoth.convertToHtml({
         path: filePath,
         options: options
@@ -52,7 +52,8 @@ module.exports = async function convertDocx2Pptx(filePath) {
     fs.writeFileSync('./questions.json', JSON.stringify(questionPool, null, 2));
 
     generatePPTX('./questions.json');
-    return;
+    //fs.unlinkSync('./questions.json');
+    return __dirname + '/question.pptx';
 }
 
 function classify(element) {

@@ -26,7 +26,7 @@ module.exports = function generatePPTX(jsonFilePath){
                 fs.writeFileSync(imageFiltPath, base64Image, {encoding: 'base64'});
                 const dimensions = sizeOf(imageFiltPath);
                 //console.log(dimensions.width, dimensions.height)
-                slide.addImage({ path: imageFiltPath, x: 1, y: 2 ,w:2, h: 2 * dimensions.height / dimensions.width, type: 'cover'});               
+                slide.addImage({ data: base64String, x: 1, y: 2 ,w:2, h: 2 * dimensions.height / dimensions.width, type: 'cover'});               
             }
             if(q.options && q.options.length > 0){
                 for (let i = 0; i < q.options.length; i++) {
