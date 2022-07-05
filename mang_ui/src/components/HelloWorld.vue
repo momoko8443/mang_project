@@ -15,7 +15,7 @@
   </a-upload> -->
   <div v-if="!showDownload">
     <input ref="fileInput" type="file" hidden @change="getFile($event)">
-    <a-button @click="submitForm($event)">
+    <a-button @click="submitForm($event)" :loading="iconLoading">
       <upload-outlined></upload-outlined>
       上传试卷~
     </a-button>
@@ -25,7 +25,7 @@
     <!-- <span>请下载！</span> -->
     <!-- s -->
     <br/>
-    <a-button @click="downloadHandler">下载 pptx</a-button>
+    <a-button @click="downloadHandler" :loading="iconLoading">下载 pptx</a-button>
     <br/>
     <a-button type="link" @click="backHandler">再来一发</a-button>
   </div>
@@ -46,6 +46,7 @@ export default defineComponent({
     return {
       showDownload: false,
       file: '',
+      iconLoading: false
     }
   },
   methods:{
@@ -55,11 +56,13 @@ export default defineComponent({
       event.preventDefault();
       let formData = new FormData();
       formData.append('file', this.file);
+      this.iconLoading = true;
       axios.post('/api/upload',formData,{
         headers:{
           'Content-Type':'multipart/form-data'
         }
       }).then(res =>{
+         this.iconLoading = false;
         if(res.status === 200){
           this.showDownload = true;
         }
@@ -73,6 +76,7 @@ export default defineComponent({
       this.showDownload = false;
     },
     downloadHandler(){
+      this.iconLoading = true;
       axios.get('/api/download',{
         responseType: 'blob'
       }).then((res)=>{
@@ -84,6 +88,7 @@ export default defineComponent({
         a.download = 'question.pptx';
         a.click();
         window.URL.revokeObjectURL(url);
+        this.iconLoading = false;
       });
     }
   },
