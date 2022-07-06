@@ -26,6 +26,7 @@ function middlewareCheckAuthingToken(req, res, next){
   } catch (error) {
     res.sendStatus(403);
   }
+}
 app.use('/api/*',middlewareCheckAuthingToken);
 app.get('/api/download',(req,res)=>{
   const filePath = __dirname + '/question.pptx';

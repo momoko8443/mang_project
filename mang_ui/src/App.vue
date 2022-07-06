@@ -1,6 +1,12 @@
 <template>
   <HelloWorld v-if="user !== null"/>
-  <div v-else class="btn" @click="showGuard">登录</div>
+  <div v-else>
+    <img class="img" src="./assets/logo3.webp">
+    <h1>Mang Project</h1>
+    <br/>
+    <br/>
+    <a-button class="btn" type="primary" @click="showGuard">登录/注册</a-button>
+  </div>
   <Guard
     :authClient="authClient"
     :visible="visible"
@@ -88,5 +94,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.img{
+  width: 400px;
+  border-radius:50px;
+  margin: 10px;
+  border: 3px solid #2f4d6b;
 }
 </style>
