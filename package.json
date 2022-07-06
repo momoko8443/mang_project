@@ -15,7 +15,11 @@
     "express-fileupload": "^1.4.0",
     "image-size": "^1.0.1",
     "jsdom": "^20.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mammoth": "^1.4.21",
     "pptxgenjs": "^3.10.0"
+  },
+  "devDependencies": {
+    "minimist": "^1.2.6"
   }
 }

@@ -26,6 +26,7 @@ module.exports = async function convertDocx2Pptx(filePath) {
     const body = result.value;
     const htmlString = `<html><head></head><body>${body}</body></html>`;
     //console.log(htmlString);
+    fs.writeFileSync('./output3.html',htmlString);
     const dom = new JSDOM(htmlString, {
         includeNodeLocations: true,
         contentType: "text/html",
