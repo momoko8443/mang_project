@@ -66,7 +66,8 @@ function classify(element) {
         console.log(typeof element.firstChild);
         if (element.textContent.search(titleReg) !== -1) {
             //console.log(element.textContent);
-            const rawTitle = dealwithEM(element.innerHTML);
+            let rawTitle = dealwithOtherTags(element.innerHTML);
+            rawTitle = dealwithEM(rawTitle);
             const pureTitle = leftTrimSpecialChar(rawTitle);
             console.log(pureTitle);
             currentQuestionTitle = pureTitle;
@@ -90,6 +91,9 @@ function classify(element) {
         }
         return classify(element.nextSibling);
     }
+}
+function dealwithOtherTags(str){
+    return match = str.replace(/(<a.*<\/a>)/g, '');
 }
 
 function dealwithEM(str){
