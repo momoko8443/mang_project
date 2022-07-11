@@ -86,11 +86,11 @@ Question.init({
     defaultValue: 0
   },
   tags: {
-    type: DataTypes.ARRAY,
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
   options: {
-    type: DataTypes.ARRAY,
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   }
 }, {
