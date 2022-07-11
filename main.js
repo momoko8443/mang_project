@@ -43,7 +43,7 @@ module.exports = async function convertDocx2Pptx(filePath) {
     // const selectionQuestions = [];
     selectionQuestion.nextSibling;
     classify(selectionQuestion.nextSibling);
-    for (let key in questionPool) {
+    for (let key in questionPool) { 
         const q = questionPool[key];
         let tmpOpt = classifyOption(q['rawOptions']);
         tmpOpt = tmpOpt.map((item) => item.trim());
@@ -66,7 +66,8 @@ function classify(element) {
         console.log(typeof element.firstChild);
         if (element.textContent.search(titleReg) !== -1) {
             //console.log(element.textContent);
-            const pureTitle = leftTrimSpecialChar(element.textContent);
+            const rawTitle = dealwithEM(element.innerHTML);
+            const pureTitle = leftTrimSpecialChar(rawTitle);
             console.log(pureTitle);
             currentQuestionTitle = pureTitle;
             questionPool[currentQuestionTitle] = {
@@ -83,11 +84,16 @@ function classify(element) {
         }
         else {
             if (questionPool[currentQuestionTitle]) {
-                questionPool[currentQuestionTitle]['rawOptions'].push(element.textContent);
+                const rawOption = dealwithEM(element.innerHTML);
+                questionPool[currentQuestionTitle]['rawOptions'].push(rawOption);
             }
         }
         return classify(element.nextSibling);
     }
+}
+
+function dealwithEM(str){
+    return match = str.replace(/<em>|<\/em>/g, '');
 }
 
 

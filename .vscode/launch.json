@@ -13,7 +13,7 @@
             ],
             "program": "${workspaceFolder}/test.js",
             "args": [
-                "--file=test5.docx"
+                "--file=test1.docx"
             ]
         }
     ]
