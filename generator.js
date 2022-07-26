@@ -50,7 +50,12 @@ module.exports = function generatePPTX(jsonFilePath){
     pres.writeFile({fileName: 'question.pptx'});
 
     function generateText(rawText, isTitle){
-        const tmpArr = rawText.split(/(<sub>.{1,2}<\/sub>)/);
+        const tmpArr = rawText.split(/((<sup>|<sub>).{1,2}(<\/sup>|<\/sub>))/).filter((x) => {
+            if(x !== "<sub>" && x !== "</sub>" && x !== "<sup>" && x !== "</sup>"){
+                return true
+            }
+            return false;
+        });
         const textArr = [];
         for (let i = 0; i < tmpArr.length; i++) {
             let tmp = tmpArr[i];
@@ -59,13 +64,28 @@ module.exports = function generatePPTX(jsonFilePath){
                 const subtext = {    
                     text: tmp,
                     options: {
-                        fontSize: isTitle ? 12 : 8,
+                        // fontSize: isTitle ? 12 : 8,
+                        subscript: true
                         // color: '363636',
                         // fill: {color: 'F1F1F1'},
                     }
                 }
                 textArr.push(subtext);
-            }else{
+            }
+            else if(tmp.search(/^(<sup>.{1,2}<\/sup>)$/) !== -1){
+                tmp =  tmp.replace(/<sup>|<\/sup>/g,"");
+                const subtext = {    
+                    text: tmp,
+                    options: {
+                        // fontSize: isTitle ? 12 : 8,
+                        superscript: true
+                        // color: '363636',
+                        // fill: {color: 'F1F1F1'},
+                    }
+                }
+                textArr.push(subtext);
+            }
+            else{
                 const subtext = {    
                     text: tmp,
                     options: {

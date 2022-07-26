@@ -39,10 +39,26 @@ module.exports = async function convertDocx2Pptx(filePath) {
         }
         return false;
     });
+
+    const fieldQuestion = Array.from(document.querySelectorAll('p')).find((element) => {
+        if(element && element.textContent) {
+            return element.textContent.search('part_two') !== -1
+        }
+        return false;
+    });
     //selectionQuestion && console.log(selectionQuestion.textContent);
     // const selectionQuestions = [];
     selectionQuestion.nextSibling;
     classify(selectionQuestion.nextSibling);
+    // for (let key in questionPool) { 
+    //     const q = questionPool[key];
+    //     let tmpOpt = classifyOption(q['rawOptions']);
+    //     tmpOpt = tmpOpt.map((item) => item.trim());
+    //     q['options'] = tmpOpt;
+    // }
+
+    // fieldQuestion.nextSibling;
+    classify2(fieldQuestion.nextSibling);
     for (let key in questionPool) { 
         const q = questionPool[key];
         let tmpOpt = classifyOption(q['rawOptions']);
@@ -90,6 +106,42 @@ function classify(element) {
             }
         }
         return classify(element.nextSibling);
+    }
+}
+
+function classify2(element) {
+    const titleReg = /^\d+[\s\S]*/g;
+    if (!element.nextSibling || (element && element.textContent.search('part_three') !== -1)) {
+        return;
+    } else {
+        //is question title
+        console.log(typeof element.firstChild);
+        if (element.textContent.search(titleReg) !== -1) {
+            //console.log(element.textContent);
+            let rawTitle = dealwithOtherTags(element.innerHTML);
+            rawTitle = dealwithEM(rawTitle);
+            const pureTitle = leftTrimSpecialChar(rawTitle);
+            console.log(pureTitle);
+            currentQuestionTitle = pureTitle;
+            questionPool[currentQuestionTitle] = {
+                title: pureTitle,
+                no: getQuestionNumber(element.textContent),
+                rawOptions: [],
+                image: null
+            }
+        }
+        else if (element.firstChild && element.firstChild.nodeName === 'IMG') {
+            if (questionPool[currentQuestionTitle]) {
+                questionPool[currentQuestionTitle]['image'] = element.firstChild.src;//.substring(0,20);
+            }
+        }
+        // else {
+        //     if (questionPool[currentQuestionTitle]) {
+        //         const rawOption = dealwithEM(element.innerHTML);
+        //         questionPool[currentQuestionTitle]['rawOptions'].push(rawOption);
+        //     }
+        // }
+        return classify2(element.nextSibling);
     }
 }
 function dealwithOtherTags(str){
